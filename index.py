@@ -15,7 +15,7 @@ def PB(w, h, r, p):
     draw.rounded_rectangle((0, 0, w*p/100, h), fill=(142, 195, 100), radius=r)
     return image
 
-def Total(PG, username, lvl, classe, rank, uuid, online, last, playtime):
+def Total(PG, username, lvl, classe, rank, uuid, online, last, playtime, guild):
     # Rectangle
     m = RoundRectangle(2560, 1080, 200)
     # Prepare to draw + init font
@@ -24,10 +24,12 @@ def Total(PG, username, lvl, classe, rank, uuid, online, last, playtime):
     font2 = ImageFont.truetype("Ubuntu-Regular.ttf", 42)
     # [Rank] Username (Class) Draw
     draw.text((650, 100),f"[{rank}] {username} ({classe})",(255,255,255),font=font)
+    # Guild Name
+    draw.text((650, 210),f"Guild: {guild}",(255,255,255),font=font2)
     # Last Online
-    draw.text((650, 200),f"Last Online: {last.strftime('%m/%d/%Y, %H:%M:%S')}",(255,255,255),font=font2)
+    draw.text((650, 260),f"Last Online: {last.strftime('%m/%d/%Y, %H:%M:%S')}",(255,255,255),font=font2)
     # Playtime
-    draw.text((650, 242),f"Playtime: {playtime.hours(4.7)}h",(255,255,255),font=font2)
+    draw.text((650, 312),f"Playtime: {playtime.hours(4.7)}h",(255,255,255),font=font2)
     # Level Draw
     draw.text((2200, 364),"lvl"+str(lvl),(255,255,255),font=font)
     # Skin Draw
@@ -46,17 +48,18 @@ def Total(PG, username, lvl, classe, rank, uuid, online, last, playtime):
 
 async def main():
     async with Corkus() as corkus:
-
         player = await corkus.player.get("enzomtp")
         print(f"username: {player.username}, {player.rank}")
         character = player.best_character
         print(f"best character: {character.display_name} ({character.combat.level}lv)")
         print(player.uuid)
-        Total(character.combat.level_progress, player.username, character.combat.level, character.display_name, str(player.tag).replace('PlayerTag.',''), str(player.uuid), player.online, player.last_online, player.playtime)
 
         if player.guild:
             guild = await player.guild.fetch()
             print(f"guild: {player.guild.name} {guild.level}lv ({len(guild.members)} members)")
+            Total(character.combat.level_progress, player.username, character.combat.level, character.display_name, str(player.tag).replace('PlayerTag.',''), str(player.uuid), player.online, player.last_online, player.playtime, player.guild.name)
+        else:
+                Total(character.combat.level_progress, player.username, character.combat.level, character.display_name, str(player.tag).replace('PlayerTag.',''), str(player.uuid), player.online, player.last_online, player.playtime, "None")
 
 loop = asyncio.get_event_loop()
 loop.run_until_complete(main())
