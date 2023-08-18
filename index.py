@@ -1,6 +1,10 @@
-import asyncio, time, os, pycord, requests
+import asyncio, time, os, pycord, requests, json
 from corkus import Corkus
 from PIL import Image, ImageFont, ImageDraw, ImageEnhance
+from cairosvg import svg2png
+# Define all variables
+preconf = open('./config.json')
+config = json.load(preconf)
 
 def RoundRectangle(w, h, r):
     image = Image.new("RGBA", (w, h), (30,30,30,0))
@@ -37,6 +41,14 @@ def TotalPlayer(PG, username, lvl, classe, rank, uuid, online, last, playtime, g
     with open('temp.png', 'wb') as handler:
         handler.write(img_data)
     m.paste(Image.open("temp.png"), (150, 100), Image.open("temp.png"))
+
+    # Books draw
+
+    # Strenght
+    img_data = requests.get('https://cdn.wynncraft.com/nextgen/skill/strength_book.svg').content
+    svg2png(url=img_data, write_to="temp.png")
+    m.paste(Image.open("temp.png"), (150, 500), Image.open("temp.png"))
+    
     # Check Online
     if online:
         draw.ellipse((525, 100, 625, 200), fill=(0, 255, 0))
